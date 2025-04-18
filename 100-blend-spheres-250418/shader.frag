@@ -31,6 +31,7 @@ float smin( float a, float b, float k )
     return mix( b, a, h ) - k*h*(1.0-h);
 }
 
+
 float sceneSDF(vec3 p) {
     pMod1(p.x, 3.0);
     vec3 mouse = vec3(0.0, u_mouse.y / u_resolution.y - 0.5, 0.0);
