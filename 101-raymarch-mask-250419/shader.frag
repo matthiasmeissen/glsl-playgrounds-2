@@ -13,12 +13,12 @@ uniform float    u_input;
 #define RAYMARCH_AMBIENT    vec3(0.6, 0.8, 1.0)
 
 #include "../lygia/space/ratio.glsl"
+#include "../lygia/space/rotate.glsl"
+#include "../lygia/space/scale.glsl"
 #include "../lygia/sdf.glsl"
 #include "../lygia/lighting/raymarch.glsl"
 #include "../lygia/color/space/linear2gamma.glsl"
 #include "../lygia/generative/pnoise.glsl"
-#include "../lygia/space/rotate.glsl"
-#include "../lygia/space/scale.glsl"
 
 float noiseFloor(vec2 uv, float scale) {
     float n = pnoise(vec3(uv.x, uv.y + u_time, u_time * 0.2), vec3(4.0, 2.4, 8.0));
@@ -39,20 +39,19 @@ Material raymarchMap( in vec3 pos ) {
     Material spheres = materialNew(sphereTexture, 0.0, 0.2, spheresDistance);
 
     Material scene = opUnion( plane, spheres );
-    
+
     return scene;
 }
 
 float pattern(vec2 st) {
     st = ratio(st, u_resolution.xy);
-
     st = scale(st, abs(sin(u_time * 0.4))+ 0.2);
 
-    vec2 stf = rotate(st, u_time * 0.4);
+    vec2 str = rotate(st, u_time * 0.4);
 
     float d = sin(u_time * 0.8) * 0.3;
 
-    float s1 = circleSDF(stf + vec2(d, 0.0));
+    float s1 = circleSDF(str + vec2(d, 0.0));
     float s2 = circleSDF(st - vec2(d, 0.0));
     float s3 = circleSDF(st + vec2(0.0, d));
     float s4 = circleSDF(st - vec2(0.0, d));
