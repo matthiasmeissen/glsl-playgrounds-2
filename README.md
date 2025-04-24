@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+104 Ramp Grain  
+![Ramp Grain](104-ramp-grain-250424/104-ramp-grain-250424.png)
+
 103 Noise Displace  
 ![Noise Displace](103-noise-displace-250421/103-noise-displace-250421.png)
 

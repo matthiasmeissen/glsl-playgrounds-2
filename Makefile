@@ -9,3 +9,6 @@
 
 103:
 	glslViewer 103-noise-displace-250421/shader.frag -l
+
+104:
+	glslViewer 104-ramp-grain-250424/shader.frag -l
