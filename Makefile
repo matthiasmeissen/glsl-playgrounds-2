@@ -12,3 +12,6 @@
 
 104:
 	glslViewer 104-ramp-grain-250424/shader.frag -l
+
+105:
+	glslViewer 105-geometry-rotate-250425/shader.vert 105-geometry-rotate-250425/shader.frag assets/tube-250425.obj  -l

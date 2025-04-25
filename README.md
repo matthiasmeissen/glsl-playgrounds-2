@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+105 Geometry Rotate  
+![Geometry Rotate](105-geometry-rotate-250425/105-geometry-rotate-250425.png)
+
 104 Ramp Grain  
 ![Ramp Grain](104-ramp-grain-250424/104-ramp-grain-250424.png)
 
