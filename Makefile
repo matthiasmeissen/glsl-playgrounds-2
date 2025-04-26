@@ -15,3 +15,6 @@
 
 105:
 	glslViewer 105-geometry-rotate-250425/shader.vert 105-geometry-rotate-250425/shader.frag assets/tube-250425.obj  -l
+
+106:
+	glslViewer 106-geometry-postprocess-250426/shader.vert 106-geometry-postprocess-250426/shader.frag assets/tube-250425.obj  -l

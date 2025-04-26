@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+106 Geometry Postprocess  
+![Geometry Postprocess](106-geometry-postprocess-250426/106-geometry-postprocess-250426.png)
+
 105 Geometry Rotate  
 ![Geometry Rotate](105-geometry-rotate-250425/105-geometry-rotate-250425.png)
 
