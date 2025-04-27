@@ -34,14 +34,12 @@ void main(void) {
 #ifdef BACKGROUND
     // Background
     float d = step(0.78, c.x) - step(0.8, c.x);
-
     color = vec3(d);
 
 #elif defined(POSTPROCESSING)
     // Postprocessing
     c = c * 0.04;
     st += c.xy;
-
     vec3 inputPass = texture2D(u_scene, st).rgb;
     color = inputPass;
 
