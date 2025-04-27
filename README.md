@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+107 Texture Coordinates  
+![Texture Coordinates](107-texture-coordinates-250427/107-texture-coordinates-250427.png)
+
 106 Geometry Postprocess  
 ![Geometry Postprocess](106-geometry-postprocess-250426/106-geometry-postprocess-250426.png)
 

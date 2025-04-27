@@ -18,3 +18,6 @@
 
 106:
 	glslViewer 106-geometry-postprocess-250426/shader.vert 106-geometry-postprocess-250426/shader.frag assets/tube-250425.obj  -l
+
+107:
+	glslViewer 107-texture-coordinates-250427/shader.vert 107-texture-coordinates-250427/shader.frag assets/tube-250425.obj  -l
