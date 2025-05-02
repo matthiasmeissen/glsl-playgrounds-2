@@ -20,7 +20,6 @@ varying vec2 v_texcoord;
 #include "../lygia/space/ratio.glsl"
 #include "../lygia/space/center.glsl"
 #include "../lygia/filter/boxBlur.glsl"
-#include "../lygia/generative/curl.glsl"
 
 void main(void) {
     vec3 color = vec3(0.0);
@@ -29,23 +28,22 @@ void main(void) {
     vec2 uv = ratio(st, u_resolution);
     uv = center(uv);
 
-    vec3 c = curl(vec3(uv.x, uv.y, u_time * 0.2));
-
 #ifdef BACKGROUND
     // Background
-    float d = step(0.78, c.x) - step(0.8, c.x);
+    float d = fract(uv.y * st.y * 8.0 - u_time * 0.8);
     color = vec3(d);
 
 #elif defined(POSTPROCESSING)
     // Postprocessing
-    c = c * 0.04;
-    st += c.xy;
     vec3 inputPass = texture2D(u_scene, st).rgb;
+    inputPass = smoothstep(vec3(0.1), vec3(0.8), inputPass);
+    inputPass = step(inputPass, vec3(fract(sin(u_time))));
     color = inputPass;
 
 #else
     // Material
-    float d = fract(v_texcoord.y + u_time);
+    float t = abs(length(v_texcoord * 4.0));
+    float d = fract(t + u_time);
     color = vec3(d);
 
 #endif

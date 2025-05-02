@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+108 Geometry Scale  
+![Geometry Scale](108-geometry-scale-250502/108-geometry-scale-250502.png)
+
 107 Texture Coordinates  
 ![Texture Coordinates](107-texture-coordinates-250427/107-texture-coordinates-250427.png)
 
