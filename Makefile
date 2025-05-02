@@ -21,3 +21,6 @@
 
 107:
 	glslViewer 107-texture-coordinates-250427/shader.vert 107-texture-coordinates-250427/shader.frag assets/tube-250425.obj  -l
+
+108:
+	glslViewer 108-pt-250502/shader.vert 108-pt-250502/shader.frag assets/tube-250425.obj  -l
