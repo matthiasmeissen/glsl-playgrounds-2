@@ -24,3 +24,6 @@
 
 108:
 	glslViewer 108-geometry-scale-250502/shader.vert 108-geometry-scale-250502/shader.frag assets/tube-250425.obj  -l
+
+109:
+	glslViewer 109-pt-250505/shader.frag #l
