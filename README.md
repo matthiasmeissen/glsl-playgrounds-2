@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+109 Rect Pattern  
+![Rect Pattern](109-rect-pattern-250505/109-rect-pattern-250505.png)
+
 108 Geometry Scale  
 ![Geometry Scale](108-geometry-scale-250502/108-geometry-scale-250502.png)
 
