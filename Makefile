@@ -29,4 +29,4 @@
 	glslViewer 109-rect-pattern-250505/shader.frag -l
 
 110:
-	glslViewer 110-pt-250510/shader.vert 110-pt-250510/shader.frag assets/tube-250425.obj -l
+	glslViewer 110-pointcloud-size-250510/shader.vert 110-pointcloud-size-250510/shader.frag assets/pointcloud-250510.ply -l
