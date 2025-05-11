@@ -12,6 +12,7 @@ uniform float       u_time;
 uniform vec2        u_mouse;
 
 varying vec4 v_color;
+varying vec4 v_pos;
 
 #include "../lygia/space/ratio.glsl"
 #include "../lygia/space/center.glsl"
@@ -26,12 +27,15 @@ void main(void) {
 #ifdef BACKGROUND
     // Background
     float d = 1.0 - abs(uv.y + 0.4);
-    d *= 1.0 - abs(uv.x + sin(u_time * 0.4)) * 2.0;
-    color = mix(vec3(0.0, 0.25, 0.94), vec3(1.0), d);
+    d = d * 0.4 * length(uv);
+    d = smoothstep(0.0, st.y, fract(d + u_time * 0.4));
+    d *= 0.8;
+    color = vec3(d);
 
 #else
     // Material
-    color = vec3(v_color.r);
+    float c = fract((v_pos.y - u_time) * 0.2);
+    color = vec3(c);
 
 #endif
 

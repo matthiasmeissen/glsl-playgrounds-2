@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+111 Displace Points  
+![Displace Points](111-displace-points-250511/111-displace-points-250511.png)
+
 110 Pointcloud Size  
 ![Pointcloud Size](110-pointcloud-size-250510/110-pointcloud-size-250510.png)
 
