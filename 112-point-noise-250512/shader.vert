@@ -15,29 +15,24 @@ varying vec4 v_pos;
 #include "../lygia/math/rotate4d.glsl"
 #include "../lygia/math/translate4d.glsl"
 #include "../lygia/math/scale4d.glsl"
-#include "../lygia/generative/pnoise.glsl"
+#include "../lygia/generative/cnoise.glsl"
 
-
-float steps(float speed, float num) {
-    float s = u_time * speed * 0.2;
-    return ceil(mod(s * 2.0, 1.0) * num) / num;
-}
 
 void main(void) {
-    mat4 translationMatrix = translate4d(vec3(0.0));
-    mat4 rotationMatrix = rotate4d(vec3(0.0, 1.0, 0.0), u_time) * rotate4d(vec3(1.0, 0.0, 0.0), 1.4);
-    mat4 scaleMatrix = scale4d(vec3(1.4));
-
-    vec3 p = a_position.xyz;
+    vec3 p = a_position.xyz * 0.8;
     vec3 period = vec3(2.0, 1.0, 0.4);
+    float speed = u_time * 0.4;
 
     vec4 displace = vec4(1.0);
+    displace.x = cnoise(p + vec3(speed, 0.0, 0.0) * period);
+    displace.y = cnoise(p + vec3(0.0, speed, 0.0));
+    displace.z = cnoise(p + vec3(0.0, 0.0, speed));
 
-    displace.x = pnoise(p + vec3(u_time, 0.0, 0.0), period);
-    displace.y = pnoise(p + vec3(0.0, u_time, 0.0), period);
-    displace.z = pnoise(p + vec3(0.0, 0.0, u_time), period);
+    mat4 translationMatrix = translate4d(vec3(0.0));
+    mat4 rotationMatrix = rotate4d(vec3(0.0, 1.0, 1.0), speed) * rotate4d(vec3(1.0, 0.0, 0.0), 1.4);
+    mat4 scaleMatrix = scale4d(vec3(1.4));
 
-    vec4 displaced_position = a_position + displace * 0.4;
+    vec4 displaced_position = a_position + atan(displace * 20.0);
 
     vec4 local_position = translationMatrix * rotationMatrix * scaleMatrix * displaced_position;
 
@@ -45,7 +40,7 @@ void main(void) {
 
     gl_PointSize = 2.0;
     
-    v_pos = local_position;
+    v_pos = displace;
 
     v_color = vec4(1.0);
 }

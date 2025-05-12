@@ -35,4 +35,4 @@
 	glslViewer 111-displace-points-250511/shader.vert 111-displace-points-250511/shader.frag assets/pointcloud-250510.ply -l
 
 112:
-	glslViewer 112-pt-250512/shader.vert 112-pt-250512/shader.frag assets/pointcloud-250510.ply -l
+	glslViewer 112-point-noise-250512/shader.vert 112-point-noise-250512/shader.frag assets/pointcloud-250510.ply -l

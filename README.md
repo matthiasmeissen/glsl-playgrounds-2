@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+112 Point Noise  
+![Point Noise](112-point-noise-250512/112-point-noise-250512.png)
+
 111 Displace Points  
 ![Displace Points](111-displace-points-250511/111-displace-points-250511.png)
 

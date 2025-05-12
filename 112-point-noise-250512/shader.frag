@@ -17,6 +17,7 @@ varying vec4 v_pos;
 #include "../lygia/space/ratio.glsl"
 #include "../lygia/space/center.glsl"
 
+
 void main(void) {
     vec3 color = vec3(0.0);
     vec2 pixel = 1.0/u_resolution.xy;
@@ -26,18 +27,17 @@ void main(void) {
 
 #ifdef BACKGROUND
     // Background
-    float d = 1.0 - abs(uv.y + 0.4);
-    d = d * 0.4 * length(uv);
-    d = smoothstep(0.0, st.y, fract(d + u_time * 0.4));
-    d *= 0.8;
+    float d = 0.2;
     color = vec3(d);
 
 #else
     // Material
-    float c = fract((v_pos.y - u_time) * 0.2);
+    float c = fract((v_pos.x - u_time) * 1.2);
     color = vec3(c);
 
 #endif
+
+    color = mix(color, 1.0 - color, uv.x * uv.y);
 
     gl_FragColor = vec4(color, 1.0);
 }
