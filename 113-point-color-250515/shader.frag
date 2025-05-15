@@ -12,32 +12,21 @@ uniform float       u_time;
 uniform vec2        u_mouse;
 
 varying vec4 v_color;
-varying vec4 v_pos;
-
-#include "../lygia/space/ratio.glsl"
-#include "../lygia/space/center.glsl"
-
 
 void main(void) {
     vec3 color = vec3(0.0);
     vec2 pixel = 1.0/u_resolution.xy;
     vec2 st = gl_FragCoord.xy * pixel;
-    vec2 uv = ratio(st, u_resolution);
-    uv = center(uv);
 
 #ifdef BACKGROUND
     // Background
-    float d = 0.2;
-    color = vec3(d);
+    color = vec3(0.04);
 
 #else
     // Material
-    float c = fract((v_pos.x - u_time) * 1.2);
-    color = vec3(c);
+    color = vec3(v_color.rgb);
 
 #endif
-
-    color = mix(color, 1.0 - color, uv.x * uv.y);
 
     gl_FragColor = vec4(color, 1.0);
 }

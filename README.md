@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+113 Point Color  
+![Point Color](113-point-color-250515/113-point-color-250515.png)
+
 112 Point Noise  
 ![Point Noise](112-point-noise-250512/112-point-noise-250512.png)
 

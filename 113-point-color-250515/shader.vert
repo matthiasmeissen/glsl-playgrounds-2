@@ -8,9 +8,9 @@ uniform mat4 u_modelMatrix;      // Base model transformation (model space to wo
 uniform float u_time;
 
 attribute vec4 a_position;       // Vertex position in model space
+attribute vec4 a_color;
 
 varying vec4 v_color;            // Send point color to fragment shader
-varying vec4 v_pos;
 
 #include "../lygia/math/rotate4d.glsl"
 #include "../lygia/math/translate4d.glsl"
@@ -32,15 +32,15 @@ void main(void) {
     mat4 rotationMatrix = rotate4d(vec3(0.0, 1.0, 1.0), speed) * rotate4d(vec3(1.0, 0.0, 0.0), 1.4);
     mat4 scaleMatrix = scale4d(vec3(1.4));
 
-    vec4 displaced_position = a_position + atan(displace * 20.0);
+    vec4 pm = vec4(1.0) * u_viewMatrix;
+
+    vec4 displaced_position = mix(a_position + displace, a_position + atan(displace * 40.0), pm.z);
 
     vec4 local_position = translationMatrix * rotationMatrix * scaleMatrix * displaced_position;
 
     gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * local_position;
 
-    gl_PointSize = 2.0;
-    
-    v_pos = displace;
+    gl_PointSize = 1.0;
 
-    v_color = vec4(1.0);
+    v_color = a_color;
 }
