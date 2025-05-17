@@ -31,11 +31,11 @@ void main(void) {
 #elif defined ( DOUBLE_BUFFER_0 )
     // Double Buffer
     color = texture2D(u_scene, st).rgb;
-    float d = step(length(vec2(uv.x + sin(u_time), uv.y)), 0.4);
-    color = mix(color, color, 0.01);
+    color = mix(color, vec3(0.98), 0.02 * fract(u_time * 0.4));
 
 #elif defined ( POSTPROCESSING )
-    color = 1.0 - texture2D(u_scene, st).rgb;
+    // Postprocessing
+    color = 1.0 - texture2D(u_scene, st).rgb * 1.4;
 
 #else
     color = v_color.rgb;
