@@ -41,4 +41,4 @@
 	glslViewer 113-point-color-250515/shader.vert 113-point-color-250515/shader.frag assets/tree-250515.ply -l
 
 114:
-	glslViewer 114-pt-250516/shader.vert 114-pt-250516/shader.frag assets/tree-250515.ply -l
+	glslViewer 114-doublebuffer-feedback-250516/shader.vert 114-doublebuffer-feedback-250516/shader.frag assets/tree-250515.ply -l

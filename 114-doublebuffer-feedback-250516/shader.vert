@@ -34,13 +34,13 @@ void main(void) {
 
     vec4 pm = vec4(1.0) * u_viewMatrix;
 
-    vec4 displaced_position = mix(a_position + displace, a_position + atan(displace * 40.0), pm.z);
+    vec4 displaced_position = mix(a_position + displace, a_position + atan(displace * 20.0), pm.z);
 
     vec4 local_position = translationMatrix * rotationMatrix * scaleMatrix * displaced_position;
 
     gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * local_position;
 
-    gl_PointSize = 1.0;
+    gl_PointSize = 2.0;
 
     v_color = a_color;
 }
