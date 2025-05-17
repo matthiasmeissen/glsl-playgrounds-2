@@ -20,7 +20,7 @@ varying vec4 v_color;            // Send point color to fragment shader
 
 void main(void) {
     vec3 p = a_position.xyz * 0.8;
-    vec3 period = vec3(2.0, 1.0, 0.4);
+    vec3 period = vec3(1.0, 0.2, 0.4);
     float speed = u_time * 0.4;
 
     vec4 displace = vec4(1.0);
@@ -30,11 +30,11 @@ void main(void) {
 
     mat4 translationMatrix = translate4d(vec3(0.0));
     mat4 rotationMatrix = rotate4d(vec3(0.0, 1.0, 1.0), speed) * rotate4d(vec3(1.0, 0.0, 0.0), 1.4);
-    mat4 scaleMatrix = scale4d(vec3(1.4));
+    mat4 scaleMatrix = scale4d(vec3(2.0));
 
     vec4 pm = vec4(1.0) * u_viewMatrix;
 
-    vec4 displaced_position = mix(a_position + displace, a_position + atan(displace * 20.0), pm.z);
+    vec4 displaced_position = mix(a_position + displace, a_position + atan(displace * 20.0), 0.0);
 
     vec4 local_position = translationMatrix * rotationMatrix * scaleMatrix * displaced_position;
 

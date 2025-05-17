@@ -25,17 +25,20 @@ void main(void) {
     uv = center(uv);
 
 #if defined ( BACKGROUND )
-    color = vec3(0.9);
+    // Background
+    color = texture2D(u_doubleBuffer0, st).rgb;
 
 #elif defined ( DOUBLE_BUFFER_0 )
     // Double Buffer
-    color = texture2D(u_doubleBuffer0, st * 0.99).rgb;
+    color = texture2D(u_scene, st).rgb;
     float d = step(length(vec2(uv.x + sin(u_time), uv.y)), 0.4);
-    color = mix(color, vec3(d), 0.1);
+    color = mix(color, color, 0.01);
+
+#elif defined ( POSTPROCESSING )
+    color = 1.0 - texture2D(u_scene, st).rgb;
 
 #else
-    // Main Buffer
-    color = texture2D(u_doubleBuffer0, st).rgb + v_color.rgb;
+    color = v_color.rgb;
 
 #endif
 
