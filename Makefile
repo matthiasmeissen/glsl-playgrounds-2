@@ -44,4 +44,4 @@
 	glslViewer 114-doublebuffer-feedback-250516/shader.vert 114-doublebuffer-feedback-250516/shader.frag assets/tree-250515.ply -l
 
 115:
-	glslViewer 115-pt-250524/shader.vert 115-pt-250524/shader.frag assets/tree-250515.ply -l
+	glslViewer 115-grid-feedback-250524/shader.vert 115-grid-feedback-250524/shader.frag assets/grid-10x10-80x80.ply -l

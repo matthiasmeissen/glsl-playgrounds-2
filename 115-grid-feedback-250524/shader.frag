@@ -26,19 +26,23 @@ void main(void) {
 
 #if defined ( BACKGROUND )
     // Background
+    // Draw feedback buffer as background
     color = texture2D(u_doubleBuffer0, st).rgb;
 
 #elif defined ( DOUBLE_BUFFER_0 )
-    // Double Buffer
-    color = texture2D(u_scene, st).rgb;
-    color = mix(color, vec3(0.98), 0.02 * fract(u_time * 0.4));
+    // Feedback Buffer
+    // Get scene and mix with almost black color
+    color = texture2D(u_scene, st * 0.996).rgb;
+    color = color - vec3(0.01);
 
 #elif defined ( POSTPROCESSING )
     // Postprocessing
-    color = 1.0 - texture2D(u_scene, st).rgb * 1.4;
+    // Get main scene as texture
+    color = texture2D(u_scene, st).rgb;
 
 #else
-    color = v_color.rgb;
+    // Main Scene
+    color = vec3(0.2, length(uv * uv), abs(sin(u_time * 0.2)) + 0.2);
 
 #endif
 
