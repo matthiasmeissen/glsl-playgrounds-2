@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+116 Sphere Trace  
+![Sphere Trace](116-sphere-trace-250526/116-sphere-trace-250526.png)
+
 115 Grid Feedback  
 ![Grid Feedback](115-grid-feedback-250524/115-grid-feedback-250524.png)
 
