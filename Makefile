@@ -45,3 +45,6 @@
 
 115:
 	glslViewer 115-grid-feedback-250524/shader.vert 115-grid-feedback-250524/shader.frag assets/grid-10x10-80x80.ply -l
+
+116:
+	glslViewer 116-sphere-trace-250526/shader.frag -l
