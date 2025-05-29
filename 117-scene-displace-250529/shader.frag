@@ -2,6 +2,7 @@
 precision mediump float; // Can be highp for better quality if performance allows
 #endif
 
+uniform sampler2D   u_doubleBuffer0;
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform vec2 u_mouse; // u_mouse.xy are pixel coordinates
@@ -78,12 +79,9 @@ float fOpUnionRound(float a, float b, float r) {
 float sceneSDF(vec3 p) {
     float dist = MAX_DIST;
 
-    vec3 spherePos = vec3(sin(u_time * 0.5) * 3.0, cos(u_time * 0.5) * 3.0, 5.0);
-    dist = min(dist, fSphere(p - spherePos, 1.0));
-
     float s = 3.5;
-    float radius = mix(0.1, 0.8, sin(u_time) * 0.2 + 0.15);
-    float blend = mix(0.1, 2.0, abs(p.y) * 0.2);
+    float radius = mix(0.1, 0.8, 0.1);
+    float blend = mix(0.1, 2.0, length(p.xy) * 0.3);
 
     for (float i = -s; i <= s; i += s) {
         for (float j = -s; j <= s; j += s) {
@@ -91,7 +89,7 @@ float sceneSDF(vec3 p) {
             
             vec3 p_local = p - cubeCenterPos;
 
-            float rotationAngleY = u_time * 0.5 + i * 0.3; 
+            float rotationAngleY = u_time * 0.8 + i * 0.3; 
             mat3 rotY = rotationY(rotationAngleY);
 
             float rotationAngleX = u_time * 0.2 + j * 0.2;
@@ -100,7 +98,7 @@ float sceneSDF(vec3 p) {
             p_local = rotX * p_local;
             p_local = rotY * p_local;
 
-            float box = fBoxRound(p_local, vec3(1.0), radius);
+            float box = fBoxRound(p_local, vec3(2.0, 0.2, 0.2), radius);
             
             dist = fOpUnionRound(dist, box, blend);
         }
@@ -147,7 +145,7 @@ float rayMarch(vec3 ro, vec3 rd, out vec3 pHit) {
 // Basic Shading
 // ----------------------------------------------------------------------------
 vec3 shade(vec3 pHit, vec3 normal, vec3 rayDir, vec3 ro) {
-    vec3 col = vec3(0.8, 0.1, 0.6); // Ambient color
+    vec3 col = vec3(1.0, 0.1, 1.0); // Ambient color
 
     vec3 lightPos = vec3(3.0, 3.0, 2.0);
     vec3 lightDir = normalize(lightPos - pHit);
@@ -169,35 +167,27 @@ vec3 shade(vec3 pHit, vec3 normal, vec3 rayDir, vec3 ro) {
 // Main Function
 // ----------------------------------------------------------------------------
 void main(void) {
-    // Normalized pixel coordinates (from 0 to 1)
-    vec2 st = gl_FragCoord.xy / u_resolution.xy;
-    // Centered and aspect-corrected coordinates (from -1 to 1, approx)
+    vec2 pixel = 1.0/u_resolution.xy;
+    vec2 st = gl_FragCoord.xy * pixel;
     vec2 uv = (2.0 * gl_FragCoord.xy - u_resolution.xy) / u_resolution.y;
+
+    vec3 finalColor;
+
+#ifdef DOUBLE_BUFFER_0
+    // Base Image
 
     // --- Camera Setup ---
     vec3 ro; // Ray Origin
     vec3 rd; // Ray Direction
 
-    // Basic perspective camera
-    // Allow mouse control for camera rotation:
-    float camAngleY = 0.0;
-    float camAngleX = 0.0;
+    // Camera Position
+    vec3 initialCamPos = vec3(0.0, 0.0, -8.0);
 
+    // Camera Rotation
+    // ro = rotationX(0.0) * rotationY(0.0) * initialCamPos;
+    ro = initialCamPos;
 
-    vec3 initialCamPos = vec3(0.0, 0.0, -8.0); // Initial camera position before rotation
-
-    // Rotation around Y axis
-    mat3 rotY = mat3(cos(camAngleY), 0.0, -sin(camAngleY),
-                     0.0, 1.0, 0.0,
-                     sin(camAngleY), 0.0, cos(camAngleY));
-    // Rotation around X axis (applied after Y rotation to the coordinate system)
-    mat3 rotX = mat3(1.0, 0.0, 0.0,
-                     0.0, cos(camAngleX), -sin(camAngleX),
-                     0.0, sin(camAngleX), cos(camAngleX));
-
-    ro = rotX * rotY * initialCamPos;
-
-    vec3 lookAt = vec3(0.0, 0.5, 5.0); // Point camera is looking at (center of scene interest)
+    vec3 lookAt = vec3(0.0, 0.0, 5.0);
     float fov = 1.8; // Field of view (lower is more zoom)
 
     vec3 camForward = normalize(lookAt - ro);
@@ -211,14 +201,36 @@ void main(void) {
     vec3 pHit; // Will store the hit position
     float t = rayMarch(ro, rd, pHit);
 
-    vec3 finalColor;
     if (t < MAX_DIST) {
         vec3 normal = calcNormal(pHit);
         finalColor = shade(pHit, normal, rd, ro);
 
     } else {
-        finalColor = vec3(0.1); // Ground to sky gradient
+        finalColor = vec3(0.1);
     }
+
+#else
+    // Postprocessing
+
+    vec2 mid = vec2(0.5, 0.5);
+    vec2 scale = vec2(0.0, 0.02);
+
+    // Calculate displacement values
+    float map = smoothstep(0.5, 1.0, fract(st.y * 20.0));
+
+    // Calculate the actual displacement offset using scale and midpoint
+    vec2 offset = (vec2(map) - mid) * scale;
+
+    // Calculate the new UV coordinate for sampling the source image
+    vec2 disp = st + offset;
+
+    // Sample the source image at the displaced UV
+    finalColor = texture2D(u_doubleBuffer0, disp).rgb;
+
+    // Add displace texture to visualise
+    // finalColor += vec3(map);
+
+#endif
 
     // Gamma correction (approximate)
     // finalColor = pow(finalColor, vec3(1.0/2.2));

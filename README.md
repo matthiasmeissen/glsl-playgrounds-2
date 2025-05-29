@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+117 Scene Displace  
+![Scene Displace](117-scene-displace-250529/117-scene-displace-250529.png)
+
 116 Sphere Trace  
 ![Sphere Trace](116-sphere-trace-250526/116-sphere-trace-250526.png)
 
