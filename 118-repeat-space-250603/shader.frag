@@ -70,6 +70,17 @@ float fOpUnionRound(float a, float b, float r) {
 	vec2 u = max(vec2(r - a,r - b), vec2(0));
 	return max(r, min (a, b)) - length(u);
 }
+
+float sawSigned(float x) {
+    // wrap x into [−1..1)
+    return mod(x + 1.0, 2.0) - 1.0;
+}
+
+float triSigned(float x) {
+    float s = mod(x + 1.0, 2.0) - 1.0;     // saw-tooth in [−1..1)
+    return 1.0 - abs(s) * 2.0;        // remap |s|∈[0..1] to [1..−1]
+}
+
 // --- End of minimal SDF primitives ---
 
 
@@ -79,30 +90,24 @@ float fOpUnionRound(float a, float b, float r) {
 float sceneSDF(vec3 p) {
     float dist = MAX_DIST;
 
-    float s = 3.5;
-    float radius = mix(0.1, 0.8, 0.1);
-    float blend = mix(0.1, 2.0, length(p.xy) * 0.3);
+    vec3 p1 = p;
 
-    for (float i = -s; i <= s; i += s) {
-        for (float j = -s; j <= s; j += s) {
-            vec3 cubeCenterPos = vec3(i, j, 5.0);
-            
-            vec3 p_local = p - cubeCenterPos;
+    p1 *= rotationX(1.0);
+    p1 *= rotationY(p1.x * 0.1);
 
-            float rotationAngleY = u_time * 0.8 + i * 0.3; 
-            mat3 rotY = rotationY(rotationAngleY);
+    float blend = 0.2;
 
-            float rotationAngleX = u_time * 0.2 + j * 0.2;
-            mat3 rotX = rotationX(rotationAngleX);
-            
-            p_local = rotX * p_local;
-            p_local = rotY * p_local;
+    p1.x = sawSigned(p1.x);
+    p1.y = sawSigned(p1.y);
 
-            float box = fBoxRound(p_local, vec3(2.0, 0.2, 0.2), radius);
-            
-            dist = fOpUnionRound(dist, box, blend);
-        }
-    }
+    float box = fBoxRound(p1, vec3(0.4, 0.1, 0.1), 0.2);
+    dist = fOpUnionRound(dist, box, blend);
+
+    vec3 p2 = p;
+    p2.y += 2.0;
+
+    float box2 = fBoxRound(p2 * rotationX(p2.x * 4.0 + u_time), vec3(3.0, 0.1, 0.1), 0.2);
+    dist = fOpUnionRound(dist, box2, blend);
 
     return dist;
 }
@@ -145,14 +150,14 @@ float rayMarch(vec3 ro, vec3 rd, out vec3 pHit) {
 // Basic Shading
 // ----------------------------------------------------------------------------
 vec3 shade(vec3 pHit, vec3 normal, vec3 rayDir, vec3 ro) {
-    vec3 col = vec3(1.0, 0.1, 1.0); // Ambient color
+    vec3 col = vec3(0.4, 0.4, 0.8); // Ambient color
 
-    vec3 lightPos = vec3(3.0, 3.0, 2.0);
+    vec3 lightPos = vec3(3.0, sin(u_time) * 3.0, 2.0);
     vec3 lightDir = normalize(lightPos - pHit);
-    float factor = 0.8; // Usually this is 0.0
+    float factor = 0.0; // Usually this is 0.0
     float diffuse = max(factor, dot(normal, lightDir));
 
-    col += vec3(0.0, 0.9, 0.7) * diffuse;
+    col += vec3(0.2, 0.9, 0.7) * diffuse;
 
     // Specular highlight (Phong)
     vec3 viewDir = normalize(ro - pHit); // Or just -rayDir if rayDir is normalized camera ray
@@ -225,7 +230,8 @@ void main(void) {
     vec2 disp = st + offset;
 
     // Sample the source image at the displaced UV
-    finalColor = texture2D(u_doubleBuffer0, disp).rgb;
+    //finalColor = texture2D(u_doubleBuffer0, disp).rgb;
+    finalColor = texture2D(u_doubleBuffer0, st).rgb;
 
     // Add displace texture to visualise
     // finalColor += vec3(map);
