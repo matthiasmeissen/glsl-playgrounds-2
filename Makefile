@@ -51,3 +51,6 @@
 
 117:
 	glslViewer 117-scene-displace-250529/shader.frag -l
+
+118:
+	glslViewer 118-repeat-space-250603/shader.frag -l
