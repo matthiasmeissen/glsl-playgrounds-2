@@ -16,9 +16,9 @@ const float MAX_DIST = 1000.0;
 
 // --- Refraction Specific Constants ---
 const float IOR_MATERIAL = 1.5; // Index of Refraction (e.g., 1.0 air, 1.33 water, 1.5 glass)
-const float IOR_AIR = 1.0;
-const vec3 ABSORPTION_COLOR = vec3(0.0); // Light absorption tint as it passes through
-const float ABSORPTION_STRENGTH = 0.3; // Strength of absorption
+const float IOR_AIR = 1.1;
+const vec3 ABSORPTION_COLOR = vec3(0.08, 0.08, 0.08); // Light absorption tint as it passes through
+const float ABSORPTION_STRENGTH = 0.4; // Strength of absorption
 const int MAX_MARCHING_STEPS_INTERNAL = 64; // Max steps for rays inside the material
 const float MAX_DIST_INTERNAL = 50.0;     // Max distance for rays inside the material
 
@@ -28,13 +28,9 @@ float random(vec2 st) {
 }
 
 vec3 applyGrain(vec3 color, vec2 uv, float time, float strength) {
-    // Use time to animate the grain, otherwise it's static
-    float noise = random(uv + fract(time * 10.0)); // Animate the seed
-
-    // Map noise from [0, 1] to [-0.5, 0.5] for centered noise, then scale by strength
+    float noise = random(uv + fract(time * 10.0));
     float grain = (noise - 0.5) * strength;
-
-    return color + vec3(grain); // Add monochrome grain
+    return color + vec3(grain);
 }
 
 // --- Minimal SDF primitives ---
@@ -102,22 +98,26 @@ float sawSigned(float x) {
 
 
 // ----------------------------------------------------------------------------
-// Scene Definition (Signed Distance Function - SDF)
+// Scene Definition
 // ----------------------------------------------------------------------------
 float sceneSDF(vec3 p) {
     float dist = MAX_DIST;
 
     vec3 p1 = p;
 
-    p1 *= rotationY(radians(45.0));
-    p1 *= rotationZ(radians(p.y * 45.0));
+    p1 *= rotationY(radians(u_time * 20.0));
+    p1 *= rotationZ(radians(u_time * 10.0));
 
-    p1.x = sawSigned(p1.x * 2.0 + u_time);
-
-    p1 *= rotationY(radians(45.0));
-
-    float box = fBoxRound(p1, vec3(0.4, 0.8, 0.4), 0.2);
+    float box = fBoxRound(p1, vec3(2.5, 0.4, abs(p.x) * 0.1), 0.2);
     dist = fOpUnionRound(dist, box, 0.2);
+
+    p1 *= rotationZ(radians(u_time * -40.0));
+    float box2 = fBoxRound(p1, vec3(2.5, abs(p.y) * 0.4, 0.4), 0.2);
+    dist = fOpUnionRound(dist, box2, 0.1);
+
+    p1 *= rotationY(radians(u_time * 25.0));
+    float box3 = fBoxRound(p1, vec3(abs(p.y) * 1.4, 0.8, 0.3), 0.2);
+    dist = fOpUnionRound(dist, box3, 0.1);
 
     return dist;
 }
@@ -188,7 +188,9 @@ float rayMarchExit(vec3 ro, vec3 rd, out vec3 pExit) {
 // ----------------------------------------------------------------------------
 vec3 getBackgroundColor(vec3 rayDir) {
     float t = 0.5 * (normalize(rayDir).y + 1.0);
-    return mix(vec3(0.65, 0.62, 0.60), vec3(0.35, 0.65, 0.70), t);
+    vec3 c1 = vec3(1.0, 0.31, 0.12);
+    vec3 c2 = vec3(0.53, 0.65, 0.71);
+    return mix(c1, c2, t);
 }
 
 
@@ -209,7 +211,7 @@ void main(void) {
     vec3 ro; // Ray Origin
     vec3 rd; // Ray Direction
 
-    vec3 initialCamPos = vec3(0.0, 0.0, -3.0); // Moved camera closer
+    vec3 initialCamPos = vec3(0.0, 0.0, -4.0); // Moved camera closer
     ro = initialCamPos;
 
     vec3 lookAt = vec3(0.0, 0.0, 0.0); // Look at origin
@@ -290,10 +292,23 @@ void main(void) {
         finalColor = getBackgroundColor(rd); // Ray missed all objects
     }
 
-#else // DOUBLE_BUFFER_0 not defined (Postprocessing pass)
-    // Passthrough or simple post effect
-    vec2 st1 = st * rot2(radians(90.0));
-    finalColor = texture2D(u_doubleBuffer0, st1).rgb;
+#else
+    // Postprocessing
+    
+    vec2 mid = vec2(0.5, 0.5);
+    vec2 scale = vec2(0.0, 0.02);
+
+    // Calculate displacement values
+    float map = smoothstep(0.5, 1.0, fract(uv.y * 2.0 - u_time));
+
+    // Calculate the actual displacement offset using scale and midpoint
+    vec2 offset = (vec2(map) - mid) * scale;
+
+    // Calculate the new UV coordinate for sampling the source image
+    vec2 disp = st + offset;
+
+    // Sample the source image at the displaced UV
+    finalColor = texture2D(u_doubleBuffer0, disp).rgb;
 
     // Add grain to image
     finalColor = applyGrain(finalColor, uv, 0.0, 0.1);
