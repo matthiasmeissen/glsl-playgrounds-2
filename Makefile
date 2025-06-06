@@ -57,3 +57,6 @@
 
 119:
 	glslViewer 119-refractive-shapes-250604/shader.frag -l
+
+120:
+	glslViewer 120-glass-union-250606/shader.frag -l
