@@ -16,11 +16,14 @@ const float MAX_DIST = 1000.0;
 
 // --- Refraction Specific Constants ---
 const float IOR_MATERIAL = 1.5; // Index of Refraction (e.g., 1.0 air, 1.33 water, 1.5 glass)
-const float IOR_AIR = 1.1;
-const vec3 ABSORPTION_COLOR = vec3(0.08, 0.08, 0.08); // Light absorption tint as it passes through
-const float ABSORPTION_STRENGTH = 0.4; // Strength of absorption
+const float IOR_AIR = 1.2;
+const float ABSORPTION_STRENGTH = 0.1; // Strength of absorption
 const int MAX_MARCHING_STEPS_INTERNAL = 64; // Max steps for rays inside the material
 const float MAX_DIST_INTERNAL = 50.0;     // Max distance for rays inside the material
+
+const vec3 ABSORPTION_COLOR = vec3(0.549, 0.431, 0.31);
+const vec3 SKY_TOP = vec3(0.024, 0.071, 0.173);
+const vec3 SKY_BOTTOM = vec3(0.737, 0.631, 0.518);
 
 
 float random(vec2 st) {
@@ -94,6 +97,11 @@ float sawSigned(float x) {
     return mod(x + 1.0, 2.0) - 1.0;
 }
 
+float starCircleSDF( in vec3 p, in float size, in float thickness ) {
+    vec2 d = vec2(p.x * p.y * p.z * sin(p.y * 2.0), length(p) - size);
+    return length(d) - thickness;
+}
+
 // --- End of minimal SDF primitives ---
 
 
@@ -105,19 +113,12 @@ float sceneSDF(vec3 p) {
 
     vec3 p1 = p;
 
-    p1 *= rotationY(radians(u_time * 20.0));
-    p1 *= rotationZ(radians(u_time * 10.0));
+    p1 *= rotationX(radians(u_time * 20.0));
 
-    float box = fBoxRound(p1, vec3(2.5, 0.4, abs(p.x) * 0.1), 0.2);
-    dist = fOpUnionRound(dist, box, 0.2);
+    float d = mix(abs(p1.x * 2.0), abs(p1.y), p.z);
 
-    p1 *= rotationZ(radians(u_time * -40.0));
-    float box2 = fBoxRound(p1, vec3(2.5, abs(p.y) * 0.4, 0.4), 0.2);
-    dist = fOpUnionRound(dist, box2, 0.1);
-
-    p1 *= rotationY(radians(u_time * 25.0));
-    float box3 = fBoxRound(p1, vec3(abs(p.y) * 1.4, 0.8, 0.3), 0.2);
-    dist = fOpUnionRound(dist, box3, 0.1);
+    float s = starCircleSDF(p1, 2.0, d * 0.2 + 0.1);
+    dist = fOpUnionRound(dist, s, 0.2);
 
     return dist;
 }
@@ -188,9 +189,7 @@ float rayMarchExit(vec3 ro, vec3 rd, out vec3 pExit) {
 // ----------------------------------------------------------------------------
 vec3 getBackgroundColor(vec3 rayDir) {
     float t = 0.5 * (normalize(rayDir).y + 1.0);
-    vec3 c1 = vec3(1.0, 0.31, 0.12);
-    vec3 c2 = vec3(0.53, 0.65, 0.71);
-    return mix(c1, c2, t);
+    return mix(SKY_TOP, SKY_BOTTOM, t);
 }
 
 
@@ -308,7 +307,7 @@ void main(void) {
     vec2 disp = st + offset;
 
     // Sample the source image at the displaced UV
-    finalColor = texture2D(u_doubleBuffer0, disp).rgb;
+    finalColor = texture2D(u_doubleBuffer0, disp).rgb * 1.2;
 
     // Add grain to image
     finalColor = applyGrain(finalColor, uv, 0.0, 0.1);
