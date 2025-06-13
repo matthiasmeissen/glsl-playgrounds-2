@@ -16,14 +16,14 @@ const float MAX_DIST = 1000.0;
 
 // --- Refraction Specific Constants ---
 const float IOR_MATERIAL = 1.5; // Index of Refraction (e.g., 1.0 air, 1.33 water, 1.5 glass)
-const float IOR_AIR = 1.2;
-const float ABSORPTION_STRENGTH = 0.1; // Strength of absorption
+const float IOR_AIR = 1.0;
+const float ABSORPTION_STRENGTH = 0.4; // Strength of absorption
 const int MAX_MARCHING_STEPS_INTERNAL = 64; // Max steps for rays inside the material
 const float MAX_DIST_INTERNAL = 50.0;     // Max distance for rays inside the material
 
-const vec3 ABSORPTION_COLOR = vec3(0.549, 0.431, 0.31);
-const vec3 SKY_TOP = vec3(0.024, 0.071, 0.173);
-const vec3 SKY_BOTTOM = vec3(0.737, 0.631, 0.518);
+const vec3 ABSORPTION_COLOR = vec3(0.039, 0.024, 0.024);
+const vec3 SKY_TOP = vec3(0.784, 0.275, 0.157);
+const vec3 SKY_BOTTOM = vec3(0.824, 0.725, 0.706);
 
 
 float random(vec2 st) {
@@ -111,14 +111,17 @@ float starCircleSDF( in vec3 p, in float size, in float thickness ) {
 float sceneSDF(vec3 p) {
     float dist = MAX_DIST;
 
-    vec3 p1 = p;
+    vec3 p1 = vec3(p.x * 0.2, p.y * sin(p.x * 4.0), p.z);
+    p1 *= rotationY(u_time);
 
-    p1 *= rotationX(radians(u_time * 20.0));
+    vec3 p2 = vec3(p.x, p.y - 4.0, p.z);
 
-    float d = mix(abs(p1.x * 2.0), abs(p1.y), p.z);
-
-    float s = starCircleSDF(p1, 2.0, d * 0.2 + 0.1);
+    float s = starCircleSDF(p1, 2.0, 0.04);
     dist = fOpUnionRound(dist, s, 0.2);
+
+    // Rotate px based on px value multiplied by time twists it, scale factor defines density
+    float box2 = fBoxRound(p2 * rotationX(p2.x * 1.2 + u_time), vec3(4.0, 0.02, 2.0), 0.2);
+    dist = fOpUnionRound(dist, box2, 0.2);
 
     return dist;
 }
@@ -210,11 +213,11 @@ void main(void) {
     vec3 ro; // Ray Origin
     vec3 rd; // Ray Direction
 
-    vec3 initialCamPos = vec3(0.0, 0.0, -4.0); // Moved camera closer
+    vec3 initialCamPos = vec3(0.0, 0.0, -4.0);
     ro = initialCamPos;
 
-    vec3 lookAt = vec3(0.0, 0.0, 0.0); // Look at origin
-    float fov = 1.0; // Field of view
+    vec3 lookAt = vec3(0.0, 2.4, 0.0); // Look at origin
+    float fov = 0.9; // Field of view
 
     vec3 camForward = normalize(lookAt - ro);
     vec3 camRight = normalize(cross(vec3(0.0, 1.0, 0.0), camForward));
@@ -297,8 +300,13 @@ void main(void) {
     vec2 mid = vec2(0.5, 0.5);
     vec2 scale = vec2(0.0, 0.02);
 
-    // Calculate displacement values
+    // For water drop like effect use
+    // vec2 scale = vec2(0.2, 0.1);
+    // float map = smoothstep(0.5, 1.0, fract(length(uv) * 2.0 - u_time));
+
+    // Displacement
     float map = smoothstep(0.5, 1.0, fract(uv.y * 2.0 - u_time));
+    
 
     // Calculate the actual displacement offset using scale and midpoint
     vec2 offset = (vec2(map) - mid) * scale;
@@ -307,7 +315,7 @@ void main(void) {
     vec2 disp = st + offset;
 
     // Sample the source image at the displaced UV
-    finalColor = texture2D(u_doubleBuffer0, disp).rgb * 1.2;
+    finalColor = texture2D(u_doubleBuffer0, disp).rgb;
 
     // Add grain to image
     finalColor = applyGrain(finalColor, uv, 0.0, 0.1);
