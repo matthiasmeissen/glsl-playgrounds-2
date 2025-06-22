@@ -21,9 +21,9 @@ const float ABSORPTION_STRENGTH = 0.4; // Strength of absorption
 const int MAX_MARCHING_STEPS_INTERNAL = 64; // Max steps for rays inside the material
 const float MAX_DIST_INTERNAL = 50.0;     // Max distance for rays inside the material
 
-const vec3 ABSORPTION_COLOR = vec3(0.039, 0.024, 0.024);
-const vec3 SKY_TOP = vec3(0.784, 0.275, 0.157);
-const vec3 SKY_BOTTOM = vec3(0.824, 0.725, 0.706);
+const vec3 ABSORPTION_COLOR = vec3(0.251, 0.188, 0.961);
+const vec3 SKY_TOP = vec3(0.251, 0.188, 0.961);
+const vec3 SKY_BOTTOM = vec3(0.482, 0.486, 0.196);
 
 
 float random(vec2 st) {
@@ -111,17 +111,15 @@ float starCircleSDF( in vec3 p, in float size, in float thickness ) {
 float sceneSDF(vec3 p) {
     float dist = MAX_DIST;
 
-    vec3 p1 = vec3(p.x * 0.2, p.y * sin(p.x * 4.0), p.z);
+    float d = mix(p.x, p.y, sin(u_time * 0.82));
+    float size = mix(1.0, p.y * 0.4, sin(u_time * 0.35) * 0.8);
+
+    p *= rotationY(d + u_time);
+    vec3 p1 = vec3(p.x * sin(p.y * 4.0 + u_time), p.y, p.z);
     p1 *= rotationY(u_time);
 
-    vec3 p2 = vec3(p.x, p.y - 4.0, p.z);
-
-    float s = starCircleSDF(p1, 2.0, 0.04);
-    dist = fOpUnionRound(dist, s, 0.2);
-
-    // Rotate px based on px value multiplied by time twists it, scale factor defines density
-    float box2 = fBoxRound(p2 * rotationX(p2.x * 1.2 + u_time), vec3(4.0, 0.02, 2.0), 0.2);
-    dist = fOpUnionRound(dist, box2, 0.2);
+    float s = fBoxRound(p1, vec3(0.4, 2.0, 0.4) * size, 0.2);
+    dist = fOpUnionRound(dist, s, 0.4);
 
     return dist;
 }
@@ -216,7 +214,7 @@ void main(void) {
     vec3 initialCamPos = vec3(0.0, 0.0, -4.0);
     ro = initialCamPos;
 
-    vec3 lookAt = vec3(0.0, 2.4, 0.0); // Look at origin
+    vec3 lookAt = vec3(0.0, 0.0, 0.0); // Look at origin
     float fov = 0.9; // Field of view
 
     vec3 camForward = normalize(lookAt - ro);
@@ -305,7 +303,7 @@ void main(void) {
     // float map = smoothstep(0.5, 1.0, fract(length(uv) * 2.0 - u_time));
 
     // Displacement
-    float map = smoothstep(0.5, 1.0, fract(uv.y * 2.0 - u_time));
+    float map = smoothstep(0.5, 1.0, fract(uv.y * 2.0 - u_time * 0.8));
     
 
     // Calculate the actual displacement offset using scale and midpoint
