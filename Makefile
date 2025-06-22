@@ -66,3 +66,6 @@
 
 122:
 	glslViewer 122-twist-band-250613/shader.frag -l
+
+123:
+	glslViewer 123-glass-blend-250622/shader.frag -l
