@@ -21,9 +21,9 @@ const float ABSORPTION_STRENGTH = 0.4; // Strength of absorption
 const int MAX_MARCHING_STEPS_INTERNAL = 64; // Max steps for rays inside the material
 const float MAX_DIST_INTERNAL = 50.0;     // Max distance for rays inside the material
 
-const vec3 ABSORPTION_COLOR = vec3(0.251, 0.188, 0.961);
-const vec3 SKY_TOP = vec3(0.251, 0.188, 0.961);
-const vec3 SKY_BOTTOM = vec3(0.482, 0.486, 0.196);
+const vec3 ABSORPTION_COLOR = vec3(0.5);
+const vec3 SKY_TOP = vec3(0.5);
+const vec3 SKY_BOTTOM = vec3(0.8);
 
 
 float random(vec2 st) {
@@ -34,6 +34,26 @@ vec3 applyGrain(vec3 color, vec2 uv, float time, float strength) {
     float noise = random(uv + fract(time * 10.0));
     float grain = (noise - 0.5) * strength;
     return color + vec3(grain);
+}
+
+vec3 recolor_steps_3(float t, float stop, vec3 c1, vec3 c2, vec3 c3) {
+    t = clamp(t, 0.0, 1.0);
+    stop = clamp(stop, 0.0, 1.0);
+
+    vec3 color = mix(c1, c2, smoothstep(0.0, stop, t));
+    return mix(color, c3, smoothstep(stop, 1.0, t));
+}
+
+vec2 displacement(vec2 uv) {
+    float s = fract(uv.y * 8.0);
+    vec2 d = sin(uv / s * 0.2);
+    return vec2(d.y, d.y);
+}
+
+vec3 displace(sampler2D tex, vec2 uv, vec2 map, float strength) {
+    vec2 offset = map * strength;
+    vec2 displaced_uv = uv + offset;
+    return texture2D(tex, displaced_uv).rgb;
 }
 
 // --- Minimal SDF primitives ---
@@ -111,15 +131,21 @@ float starCircleSDF( in vec3 p, in float size, in float thickness ) {
 float sceneSDF(vec3 p) {
     float dist = MAX_DIST;
 
-    float d = mix(p.x, p.y, sin(u_time * 0.82));
-    float size = mix(1.0, p.y * 0.4, sin(u_time * 0.35) * 0.8);
+    float d = mod(3.0 * abs(p.y), 4.0);
 
-    p *= rotationY(d + u_time);
-    vec3 p1 = vec3(p.x * sin(p.y * 4.0 + u_time), p.y, p.z);
-    p1 *= rotationY(u_time);
+    vec3 p1 = p;
 
-    float s = fBoxRound(p1, vec3(0.4, 2.0, 0.4) * size, 0.2);
-    dist = fOpUnionRound(dist, s, 0.4);
+    p1 *= rotationZ(u_time * 0.4);
+    p1 = p1 * rotationY(p1.y * 3.0 + u_time);
+
+    float s1 = fBoxRound(p1, vec3(0.4, d, 0.8), 0.2);
+    dist = fOpUnionRound(dist, s1, 0.4);
+
+    vec3 p2 = p;
+    p2 *= rotationZ(u_time * -0.8);
+
+    float s2 = fBoxRound(p2, vec3(0.3, d, 1.0), 0.2);
+    dist = fOpUnionRound(dist, s2, 0.8);
 
     return dist;
 }
@@ -294,26 +320,36 @@ void main(void) {
 
 #else
     // Postprocessing
+
+    // Displace
     
-    vec2 mid = vec2(0.5, 0.5);
-    vec2 scale = vec2(0.0, 0.02);
+    vec2 mid = vec2(0.0);
+    vec2 scale = vec2(0.02, 0.04);
 
-    // For water drop like effect use
-    // vec2 scale = vec2(0.2, 0.1);
-    // float map = smoothstep(0.5, 1.0, fract(length(uv) * 2.0 - u_time));
+    float s = fract(uv.y * 4.0 - u_time);
+    s += 0.01;
+    vec2 d = sin(uv / s * 0.2);
 
-    // Displacement
-    float map = smoothstep(0.5, 1.0, fract(uv.y * 2.0 - u_time * 0.8));
+    vec2 map = vec2(d.y, d.y);
     
+    vec2 offset = (map - mid) * scale;
 
-    // Calculate the actual displacement offset using scale and midpoint
-    vec2 offset = (vec2(map) - mid) * scale;
-
-    // Calculate the new UV coordinate for sampling the source image
     vec2 disp = st + offset;
 
-    // Sample the source image at the displaced UV
     finalColor = texture2D(u_doubleBuffer0, disp).rgb;
+
+    // Recolor
+
+    float textureInput = finalColor.r;
+
+    vec3 c1 = vec3(0.063, 0.067, 0.051);
+    vec3 c2 = vec3(0.851, 0.435, 0.263);
+    vec3 c3 = vec3(0.514, 0.773, 0.878);
+    float centerPos = 0.4;
+
+    finalColor = recolor_steps_3(textureInput, centerPos, c1, c2, c3);
+
+    finalColor *= 1.2;
 
     // Add grain to image
     finalColor = applyGrain(finalColor, uv, 0.0, 0.1);

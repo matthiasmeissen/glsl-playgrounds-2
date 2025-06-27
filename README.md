@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+124 Recolor Displace  
+![Recolor Displace](124-recolor-displace-250627/124-recolor-displace-250627.png)
+
 123 Glass Blend  
 ![Glass Blend](123-glass-blend-250622/123-glass-blend-250622.png)
 
