@@ -70,5 +70,8 @@
 123:
 	glslViewer 123-glass-blend-250622/shader.frag -l
 
+124:
+	glslViewer 124-recolor-displace-250627/shader.frag -l
+
 exportVideo:
-	glslviewer 123-glass-blend-250622/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
+	glslviewer 124-recolor-displace-250627/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
