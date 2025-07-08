@@ -73,5 +73,8 @@
 124:
 	glslViewer 124-recolor-displace-250627/shader.frag -l
 
+125:
+	glslViewer 125-offset-input-250708/shader.frag -l
+
 exportVideo:
-	glslviewer 124-recolor-displace-250627/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
+	glslviewer 125-offset-input-250708/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
