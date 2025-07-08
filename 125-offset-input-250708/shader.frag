@@ -327,6 +327,7 @@ void main(void) {
     // Recolor
 
     float textureInput = finalColor.r;
+
     vec3 c1 = vec3(0.996, 0.843, 0.247);
     vec3 c2 = vec3(0.051, 0.329, 0.929);
     vec3 c3 = vec3(0.922, 0.922, 0.910);

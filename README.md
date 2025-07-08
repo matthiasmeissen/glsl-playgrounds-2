@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+125 Offset Input  
+![Offset Input](125-offset-input-250708/125-offset-input-250708.png)
+
 124 Recolor Displace  
 ![Recolor Displace](124-recolor-displace-250627/124-recolor-displace-250627.png)
 
