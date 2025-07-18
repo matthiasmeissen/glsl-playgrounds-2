@@ -76,5 +76,8 @@
 125:
 	glslViewer 125-offset-input-250708/shader.frag -l
 
+126:
+	glslViewer 126-liquid-glass-250718/shader.frag -l
+
 exportVideo:
-	glslviewer 125-offset-input-250708/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
+	glslviewer 126-liquid-glass-250718/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
