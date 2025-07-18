@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+126 Liquid Glass  
+![Liquid Glass](126-liquid-glass-250718/126-liquid-glass-250718.png)
+
 125 Offset Input  
 ![Offset Input](125-offset-input-250708/125-offset-input-250708.png)
 
