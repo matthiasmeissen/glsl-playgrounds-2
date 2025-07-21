@@ -79,5 +79,8 @@
 126:
 	glslViewer 126-liquid-glass-250718/shader.frag -l
 
+127:
+	glslViewer 127-rect-pattern-250721/shader.frag -l
+
 exportVideo:
-	glslviewer 126-liquid-glass-250718/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
+	glslviewer 127-rect-pattern-250721/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
