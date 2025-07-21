@@ -9,22 +9,51 @@ uniform float       u_time;
 uniform vec2        u_mouse;            // In Pixels
 
 
-float circlePattern(vec2 uv, float num) {
-    vec2 s = fract(uv * num);
-    float d = distance(s, vec2(0.5));
-    return 1.0 - smoothstep(0.2, 0.21, d);
+float repeat_lines(vec2 uv, vec2 grid, float s) {
+    // Quantize input shape to match grid
+    float q = floor(s * grid.x) / grid.x;
+    // Create uv grid
+    vec2 uv1 = fract(uv * grid);
+    // Draw lines from the center of each grid based on quantized input value
+    return step(abs(uv1.y - 0.5), q * 0.5);
 }
 
-float sdRoundedBox(vec2 p, vec2 b, float r) {
-    vec2 q = abs(p) - b + r;
-    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
+float reference(vec2 uv) {
+    float s = 4.0 * uv.x;
+    float d = abs(sin(uv.x * s * u_time + sin(uv.y * s + u_time)));
+    return d;
 }
 
-vec2 computeRefractOffset(float normalizedSDF) {
-    if (normalizedSDF < 0.1) return vec2(0.0);
-    vec2 grad = normalize(vec2(dFdx(normalizedSDF), dFdy(normalizedSDF)));
-    float offsetAmount = pow(normalizedSDF, 12.0) * -0.1;
-    return grad * offsetAmount;
+float quantized_lines(vec2 uv, vec2 grid) {
+    // Create quantized grid uv
+    vec2 cell_id = floor(uv * grid);
+    vec2 cell_center_uv = (cell_id + 0.5) / grid;
+
+    // Get reference shape function
+    float q = reference(cell_center_uv);
+
+    // Create uv grid
+    vec2 uv1 = fract(uv * grid);
+
+    // Draw lines from the center of each grid based on quantized input value
+    return step(abs(uv1.y - 0.5), q * 0.5);
+}
+
+float quantized_lines1(vec2 uv, vec2 grid) {
+    // Create quantized grid uv
+    vec2 cell_id = floor(uv * grid);
+    vec2 cell_center_uv = (cell_id + 0.5) / grid;
+
+    // Get reference shape function
+    float q = reference(cell_center_uv);
+
+    // Create uv grid
+    vec2 uv1 = fract(uv * grid);
+
+    // Draw lines from the center of each grid based on quantized input value
+    float d = mix(uv.y, q, sin(u_time * 0.4));
+    float lines = smoothstep(abs(uv1.y - 0.5),d , q * 0.5);
+    return step(cell_center_uv.y + q, lines);
 }
 
 
@@ -35,44 +64,14 @@ void main(void) {
 
 #ifdef DOUBLE_BUFFER_0
     // Base Image
-    float d = circlePattern(uv, 8.0);
-    d = step(fract(uv.x * 8.0 + uv.y * 12.0 + u_time), 0.2);
+    float d = quantized_lines1(uv, vec2(10.0, 8.0));
     color = vec3(d);
 
 #else
     // Postprocessing
-    vec2 mouse = (2.0 * u_mouse - u_resolution.xy) / u_resolution.y;
-    mouse = (u_mouse.x <= 0.0) ? vec2(0.0) : mouse; 
-    
-    // Define Shape
-    vec2 boxSize = vec2(0.6 + sin(u_time) * 0.2, 0.3 + sin(u_time * 0.4) * 0.1);
-    float cornerRadius = 0.2;
-    float sdf = sdRoundedBox(uv - mouse, boxSize, cornerRadius);
-    float normalizedInside = sdf / cornerRadius + 1.0;
-
-    // Effect
-
-    // Refraction
     vec3 baseTex = texture2D(u_doubleBuffer0, st).rgb;
-    vec2 distortedUV = st + computeRefractOffset(normalizedInside);
-
-    // Chromatic Aberration
-    float chromaStrength = pow(normalizedInside, 4.0) * 0.005;
-    vec2 chromaDirection = normalize(distortedUV - uv);
-
-    float r = texture2D(u_doubleBuffer0, distortedUV + chromaDirection * chromaStrength).r;
-    float g = texture2D(u_doubleBuffer0, distortedUV).g; // Green channel is our "center"
-    float b = texture2D(u_doubleBuffer0, distortedUV - chromaDirection * chromaStrength).b;
-
-    // Recombine the shifted channels. This is our final glass texture.
-    vec3 glassTex = vec3(r, g, b);
     
-    // Optional Brightness Adjustment for Shape
-    // glassTex = glassTex * 0.8 + 0.2;
-    
-    // Combine Shape and Base Image
-    float mask = 1.0 - smoothstep(0.0, 2.0 / u_resolution.y, sdf);
-    color = mix(baseTex, glassTex, mask);
+    color = baseTex;
 
 #endif
 
