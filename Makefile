@@ -82,5 +82,8 @@
 127:
 	glslViewer 127-rect-pattern-250721/shader.frag -l
 
+128:
+	glslViewer 128-repeat-grid-250725/shader.frag -l
+
 exportVideo:
-	glslviewer 127-rect-pattern-250721/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
+	glslviewer 128-repeat-grid-250725/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
