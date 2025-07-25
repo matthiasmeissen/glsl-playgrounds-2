@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+128 Repeat Grid  
+![Repeat Grid](128-repeat-grid-250725/128-repeat-grid-250725.png)
+
 127 Rect Pattern  
 ![Rect Pattern](127-rect-pattern-250721/127-rect-pattern-250721.png)
 
