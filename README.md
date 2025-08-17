@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+129 Noise Postprocessing  
+![Noise Postprocessing](129-noise-postprocessing-250817/129-noise-postprocessing-250817.png)
+
 128 Repeat Grid  
 ![Repeat Grid](128-repeat-grid-250725/128-repeat-grid-250725.png)
 
