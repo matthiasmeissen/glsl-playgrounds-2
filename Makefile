@@ -85,5 +85,8 @@
 128:
 	glslViewer 128-repeat-grid-250725/shader.frag -l
 
+129:
+	glslViewer 129-noise-postprocessing-250817/shader.frag -l
+
 exportVideo:
-	glslviewer 128-repeat-grid-250725/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
+	glslviewer 129-noise-postprocessing-250817/shader.frag -w 540 -h 675 --headless -E record,output.mp4,0,32
