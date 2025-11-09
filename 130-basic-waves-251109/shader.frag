@@ -42,7 +42,6 @@ void main() {
 
     float rep = mix(2.0, 40.0, uParam1);
 
-
     float d1 = ramp(uv.x, 20.0 * uParam2);
     float d2 = circularGradient(vec2(p.x * d1 * p.y, p.y), rep);
 

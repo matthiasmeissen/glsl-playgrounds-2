@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+130 Basic Waves  
+![Basic Waves](130-basic-waves-251109/130-basic-waves-251109.png)
+
 129 Noise Postprocessing  
 ![Noise Postprocessing](129-noise-postprocessing-250817/129-noise-postprocessing-250817.png)
 
