@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+131 Noise Displace  
+![Noise Displace](131-noise-displace-251115/131-noise-displace-251115.png)
+
 130 Basic Waves  
 ![Basic Waves](130-basic-waves-251109/130-basic-waves-251109.png)
 
