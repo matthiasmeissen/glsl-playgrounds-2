@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+132 Gradient Stack  
+![Gradient Stack](132-gradient-stacks-251116/132-gradient-stacks-251116.png)
+
 131 Noise Displace  
 ![Noise Displace](131-noise-displace-251115/131-noise-displace-251115.png)
 
