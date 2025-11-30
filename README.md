@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+134 Graphic Pattern  
+![Graphic Pattern](134-graphic-pattern-251130/134-graphic-pattern-251130.png)
+
 133 Radial Circles  
 ![Radial Circles](133-radial-circles-251122/133-radial-circles-251122.png)
 
