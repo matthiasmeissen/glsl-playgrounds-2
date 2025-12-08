@@ -7,7 +7,6 @@ uniform float u_time;
 uniform float uParam1;
 uniform float uParam2;
 uniform float uParam3;
-uniform float uParam4;
 
 out vec4 out_color;
 
@@ -56,7 +55,18 @@ void main() {
     vec2 cell = floor(gridUV);
     vec2 uv1 = fract(gridUV);
 
-    float r = hash(cell);
+    float r1 = hash(cell);
+    float r2 = (cell.x + cell.y) * 0.25;
+    float r3 = mod(cell.x + cell.y, 2.0) * 0.5;
+    float r4 = sin(cell.x * 0.5 + u_time * 0.1) * 0.5 + sin(cell.y * 0.3 + u_time * 0.2) * 0.5;
+
+    float t = uParam3;
+
+    float r = r1;
+    r = mix(r, r2, smoothstep(0.0, 0.33, t));
+    r = mix(r, r3, smoothstep(0.33, 0.66, t));
+    r = mix(r, r4, smoothstep(0.66, 1.0, t));
+
     float d = shape(uv1, 0.025, r);
 
     float m = mask(uv, vec2(repx, repy));
