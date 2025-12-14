@@ -30,6 +30,7 @@ void main() {
 
     p *= 4.0;
     p = mix(p, p * p - uv, uParam4);
+    
     float d = sdCapsule(p, h, r);
 
     float t = (-p.y + h + r) / (2.0 * (h + r));
