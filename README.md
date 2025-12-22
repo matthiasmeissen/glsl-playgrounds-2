@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+138 Fractal Basics  
+![Fractal Basics](138-fractal-basics-251222/138-fractal-basics-251222.png)
+
 137 Cell Id  
 ![Cell Id](137-cell-id-251219/137-cell-id-251219.png)
 
