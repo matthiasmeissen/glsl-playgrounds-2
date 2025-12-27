@@ -58,7 +58,6 @@ void main() {
     float rep = floor(mix(3.0, 8.0, uParam1));
     float rotation = mix(0.0, PI, uParam3);
 
-
     p *= rot(rotation);
     uv.y = fract(mix(p.x, p.y * p.x, uParam4) + u_time * 0.4);
     float s = shape(mix(p, p / uv, uParam2), rep);
@@ -72,10 +71,7 @@ void main() {
     float dots = step(0.2, length(fract(p * 120.0) - 0.5));
     dots = mix(0.9, 1.0, dots);
 
-
-
     vec3 col = addColors(base, top, top_mask);
-
     col *= dots;
 
     out_color = vec4(col, 1.0);

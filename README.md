@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+139 Fold Symetry  
+![Fold Symetry](139-fold-symetry-251227/139-fold-symetry-251227.png)
+
 138 Fractal Basics  
 ![Fractal Basics](138-fractal-basics-251222/138-fractal-basics-251222.png)
 
