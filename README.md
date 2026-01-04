@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+140 Acid Forms  
+![Acid Forms](140-acid-forms-260104/140-acid-forms-260104.png)
+
 139 Fold Symetry  
 ![Fold Symetry](139-fold-symetry-251227/139-fold-symetry-251227.png)
 
