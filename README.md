@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+141 Stripe Spin  
+![Stripe Spin](141-stripe-spin-260109/141-stripe-spin-260109.png)
+
 140 Acid Forms  
 ![Acid Forms](140-acid-forms-260104/140-acid-forms-260104.png)
 
