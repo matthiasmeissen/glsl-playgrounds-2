@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+142 Globe Spin  
+![Globe Spin](142-globe-spin-260118/142-globe-spin-260118.png)
+
 141 Stripe Spin  
 ![Stripe Spin](141-stripe-spin-260109/141-stripe-spin-260109.png)
 
