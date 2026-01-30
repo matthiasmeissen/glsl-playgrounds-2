@@ -141,7 +141,6 @@ float sceneSDF(vec3 p) {
     return dist;
 }
 
-
 vec3 calcNormal(vec3 p) {
     const float eps = 0.001;
     vec2 h = vec2(eps, 0);
