@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+144 Glass Blur  
+![Glass Blur](144-glass-blur-260207/144-glass-blur-260207.png)
+
 143 Glass Sign  
 ![Glass Sign](143-glass-sign-260130/143-glass-sign-260130.png)
 
