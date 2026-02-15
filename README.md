@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+145 Metallic Refraction 
+![Metallic Refraction](145-metallic-refraction-260215/145-metallic-refraction-260215.png)
+
 144 Glass Blur  
 ![Glass Blur](144-glass-blur-260207/144-glass-blur-260207.png)
 
