@@ -173,8 +173,6 @@ float map(vec3 p) {
     q.xz *= rot(u_time * 0.4);
     q.yx *= rot(u_time * 0.2);
 
-
-
     float torus = sdTorus(q, vec2(1.0, 0.1));
     d = opSmoothUnion(d, torus, 0.4);
 
