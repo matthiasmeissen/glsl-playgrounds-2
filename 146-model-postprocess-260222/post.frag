@@ -126,16 +126,11 @@ void main() {
     float dotK = halftoneDot(v_uv, ANGLE_K, pixelSize, cmykK.w);
     
     // 5. Subtractive Color Mixing
-    // Start with White paper
     vec3 finalColor = vec3(1.0);
     
-    // Subtract Cyan (absorbs Red)
     finalColor.r *= (1.0 - CYAN_STRENGTH * dotC);
-    // Subtract Magenta (absorbs Green)
     finalColor.g *= (1.0 - MAGENTA_STRENGTH * dotM);
-    // Subtract Yellow (absorbs Blue)
     finalColor.b *= (1.0 - YELLOW_STRENGTH * dotY);
-    // Subtract Black (absorbs Light)
     finalColor *= (1.0 - BLACK_STRENGTH * dotK);
 
     finalColor = mix(texture(u_mainPass, uv).rgb, finalColor, uBlend);

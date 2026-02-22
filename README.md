@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+146 Model Postprocess  
+![Model Postprocess](146-model-postprocess-260222/146-model-postprocess-260222.png)
+
 145 Metallic Refraction 
 ![Metallic Refraction](145-metallic-refraction-260215/145-metallic-refraction-260215.png)
 
