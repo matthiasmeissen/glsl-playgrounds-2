@@ -141,8 +141,10 @@ vec3 opRep(vec3 p, vec3 c) {
 
 // cosine based palette by iq
 vec3 palette( in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d ) {
-    return a + b*cos( 6.283185*(c*t+d) );
+    return a + b * cos(6.283185 * (c * t + d));
 }
+
+
 
 // HSL to RGB
 vec3 hsl2rgb(vec3 c) {
