@@ -9,10 +9,51 @@ uniform float uParam2;
 uniform float uParam3;
 uniform float uParam4;
 
+// 0, 81, 222
+uniform vec3 uColor1; // color
+
 out vec4 out_color;
 
 #define rot(a) mat2(cos(a), -sin(a), sin(a), cos(a))
 #define PI 3.1415926535
+
+// By iq
+float sdRoundedBox( in vec2 p, in vec2 b, in vec4 r )
+{
+    r.xy = (p.x>0.0)?r.xy : r.zw;
+    r.x  = (p.y>0.0)?r.x  : r.y;
+    vec2 q = abs(p)-b+r.x;
+    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - r.x;
+}
+
+float fluidNoise(vec2 p, float time) {
+    vec2 n = vec2(0.0);
+    vec2 q = p + vec2(time * 0.4, 0.0); // Move in X
+    
+    for (float i = 1.0; i < 4.0; i++) {
+        // Warp coordinates based on previous result
+        n += vec2(sin(i * q.y + time * 0.5), cos(i * q.x + time * 0.2));
+        q += n * 0.5; // Add warp to position
+    }
+    
+    return length(n) * 0.2; 
+}
+
+float tri(float x) { return abs(fract(x) - 0.5); }
+
+float triNoise(vec2 p, float time) {
+    p.y -= time * 0.1;
+    
+    // Rotate coordinate slightly to avoid orthogonal grid look
+    float c = cos(1.0), s = sin(1.0);
+    p *= mat2(c, -s, s, c);
+    
+    // Combine two triangle waves
+    float n = tri(p.x + tri(p.y * 1.5));
+    n += tri(p.y + tri(p.x * 2.5));
+    
+    return n; // Returns range approx 0.0 to 1.0
+}
 
 float starSDF(vec2 uv, float strength) {
     float d = length(vec2(uv.x * uv.y, uv.y * uv.x)) * strength;
@@ -34,67 +75,32 @@ vec2 star(vec2 p, float spikes) {
     return vec2(lines, fill);
 }
 
-vec2 globe(vec2 p) {
-    float base = length(vec2(p.x * 0.5, p.y));
-    float d1 = borderConstant(base, 0.4, 6.0);
-
-    float d2 = length(vec2(p.x * 0.7, p.y));
-    d2 = borderConstant(d2, 0.4, 6.0);
-
-    float d3 = length(vec2(p.x * 1.4, p.y));
-    d3 = borderConstant(d3, 0.4, 6.0);
-
-    float d4 = length(vec2(p.x * 0.8, p.y - 0.55));
-    d4 = borderConstant(d4, 0.4, 6.0);
-
-    float d5 = length(vec2(p.x * 0.8, p.y + 0.55));
-    d5 = borderConstant(d5, 0.4, 6.0);
-
-    float vLine = borderConstant(p.x, 0.0, 8.0);
-    float hLine = borderConstant(p.y, 0.0, 8.0);
-    float crossLines = vLine + hLine + d4 + d5;
-    float mask = smoothstep(0.4, 0.395, base);
-    crossLines *= mask;
-
-
-    float lines = d1 + d2 + d3 + crossLines;
-    float fill = step(base, 0.4);
-    return vec2(lines, fill);
-}
-
 void main() {
     vec2 uv = v_uv;
     vec2 p = uv - 0.5;
-    p.x *= u_resolution.x / u_resolution.y;
-    p *= 2.0;
+    p.y *= u_resolution.y / u_resolution.x;
 
-    float starSize = mix(0.6, 1.8, uParam1);
-    float starX = mix(-0.8, 0.8, uParam2);
-    float startRotation = PI * uParam3;
-    float starSpikes = mix(20.0, 40.0, uParam4);
-    float globeStretch = mix(1.1, 1.4, uParam4);
+    vec2 p1 = p * mix(8.0, 2.0, uParam1);
 
-    // --- 1. Define Colors ---
-    vec3 bgColor = vec3(0.890, 0.290, 0.145);
-    vec3 fill = vec3(0.788, 0.769, 0.698);
-    vec3 line = vec3(0.060, 0.060, 0.060);
+    float intensity = mix(0.8, 2.0, uParam2);
 
-    // --- 2. Calculate Shapes ---
-    vec2 gData = globe(vec2(p.x * globeStretch, p.y + sin(u_time) * 0.3));
-    vec2 sData = star(vec2(p.x - starX, p.y - sin(u_time) * 0.3) / starSize * rot(startRotation), starSpikes);
+    float x1 = mix(0.8, fluidNoise(p, u_time + 10.0) * 4.0, uParam3);
+    float x2 = mix(0.8, fluidNoise(p, u_time + 20.0) * 4.0, uParam3);
 
-    // --- 3. Compositing ---
-    vec3 col = bgColor;
+    float window_mask = sdRoundedBox(p1 + vec2(1.1, 0.0), vec2(x1, 1.8), vec4(0.2));
+    window_mask *= sdRoundedBox(p1 - vec2(1.1, 0.0), vec2(x2, 1.8), vec4(0.2));
+    //window_mask = step(window_mask, 0.0);
+    window_mask = 0.4 - window_mask;
 
-    // LAYER 1: GLOBE
-    vec3 gColor = mix(fill, line, gData.x);
-    float gAlpha = clamp(gData.x + gData.y, 0.0, 1.0);
-    col = mix(col, gColor, gAlpha);
+    float sky_base = fluidNoise(p, u_time);
+    vec3 sky = mix(vec3(1.0), uColor1, sky_base);
+    sky /= triNoise(p * 0.2, u_time) * intensity;
 
-    // LAYER 2: STAR
-    vec3 sColor = mix(fill, line, sData.x);
-    float sAlpha = clamp(sData.x + sData.y, 0.0, 1.0);
-    col = mix(col, sColor, sAlpha);
+    float d = starSDF(p, 20.0) * mix(0.1, 2.0, uParam4);
+
+    float mask = mix(window_mask, window_mask - d, uParam4);
+
+    vec3 col = mix(vec3(0.4 * uv.y), sky, mask);
 
     out_color = vec4(col, 1.0);
 }
