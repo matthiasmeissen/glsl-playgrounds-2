@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+148 Kalimba Strokes  
+![Kalimba Strokes](148-kalimba-strokes-260508/148-kalimba-strokes-260508.png)
+
 147 Subway Window  
 ![Subway Window](147-subway-window-260301/147-subway-window-260301.png)
 

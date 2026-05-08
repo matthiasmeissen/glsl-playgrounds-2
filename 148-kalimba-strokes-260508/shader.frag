@@ -155,26 +155,14 @@ float starSDF(vec2 uv, float strength) {
 
 float map(vec3 p) {
     float d = MAX_DIST;
-    
-    vec3 q = p;
-    q.xz *= rot(u_time * 0.4);
-    q.yx *= rot(u_time * 0.2);
-    
-    float sphere = sdSphere(q, 0.6);
-    
-    vec3 q1 = q * rotationZ(PI * 0.5);
-    float cylinder = sdCylinder(q1, vec2(0.15, 1.4));
 
-    d = opSmoothUnion(sphere, cylinder, 0.2); 
+    vec3 q = p * rotationY(u_time);
+    float box1 = sdRoundBox(vec3(p.x, p.y + fract(p.x * 2.0) -0.5, p.z), vec3(mix(0.2, 2.0, uParam4), 1.0, 0.1), 0.2);
+    d = opSmoothUnion(d, box1, 0.2); 
 
-    vec3 q2 = q * rotationZ(PI * 0.5);
-    float torus1 = sdTorus(q2, vec2(0.9, 0.1));
-
-    d = opSmoothUnion(d, torus1, 0.2);
-
-    float torus2 = sdTorus(q, vec2(1.0, 0.1));
-
-    d = opSmoothUnion(d, torus2, 0.4);
+    q = p * rotationY(p.x * 8.0) * rotationX(u_time);
+    float box2 = sdRoundBox(q, vec3(0.6, 0.1, sin(q.z)), 0.2);
+    d = opSmoothUnion(d, box2, 0.2); 
 
     return d;
 }
@@ -187,11 +175,11 @@ Material getMaterial(vec3 p) {
     Material mat;
     
     mat.albedo = vec3(0.8); 
-    mat.metallic = uParam2;           
-    mat.roughness = uParam1;
-    mat.transmission = 1.0 - uParam3;
-    mat.ior = mix(1.1, 2.4, uParam4); // 1.1 Air/Water, 2.4 Diamond
-    mat.absorption = vec3(0.08, 0.02, 0.15); 
+    mat.metallic = 0.4;           
+    mat.roughness = 0.0;
+    mat.transmission = 0.0;
+    mat.ior = 1.2; // 1.1 Air/Water, 2.4 Diamond
+    mat.absorption = vec3(0.2); 
     
     return mat;
 }
@@ -204,12 +192,12 @@ Material getMaterial(vec3 p) {
 vec3 getEnvironment(vec3 rayDir, float roughness) {
     vec2 uv = rayDir.xy;
     
-    vec3 bg = vec3(1.0, 0.0, 0.0);
+    vec3 bg = vec3(1.0, 1.0, 1.0);
 
-    float d = sin(uv.y * 4.0 + u_time * 0.4);
-    d *= fract(uv.x * 8.0 + u_time);
-    d = step(0.2, d);
-    bg *= d;
+    float t = sin(mix(rayDir.y, rayDir.z * 4.0, uParam1));
+    t = mix(t, 4.0, uParam2);
+
+    bg = vec3(-abs(uv.x) + fract(uv.y * t + u_time * 0.4));
     
     // Sun (blurs with roughness)
     float specPower = mix(32.0, 1.0, roughness); 
@@ -347,7 +335,7 @@ void main() {
     uv.x *= u_resolution.x / u_resolution.y;
     
     // Camera Setup
-    vec3 ro = vec3(0.0, 0.0, -1.2); // Ray Origin
+    vec3 ro = vec3(0.0, mix(-2.0, 2.0, uParam3), -1.0); // Ray Origin
     vec3 lookAt = vec3(0.0, 0.0, 0.0);
     
     vec3 fwd = normalize(lookAt - ro);
