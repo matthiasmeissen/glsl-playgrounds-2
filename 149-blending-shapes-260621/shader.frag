@@ -30,7 +30,6 @@ float smin( float a, float b, float k )
     return b - k * g;
 }
 
-
 float column(vec2 p) {
     float blend = mix(0.03, 0.1, uParam4);
 

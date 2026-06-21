@@ -2,6 +2,9 @@
 
 A place to learn GLSL shaders.
 
+149 Blending Shapes  
+![Blending Shapes](149-blending-shapes-260621/149-blending-shapes-260621.png)
+
 148 Kalimba Strokes  
 ![Kalimba Strokes](148-kalimba-strokes-260508/148-kalimba-strokes-260508.png)
 
